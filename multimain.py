@@ -10,7 +10,6 @@ import json
 import numpy as np 
 import pandas as pd 
 from config import config
-from notify import pushplus
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
@@ -32,8 +31,6 @@ from Focalloss import FocalLoss,Balanced_CE_loss,CombinedLoss
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# use_dropout = True  # 不使用Dropout的情况下为False
-# dropout_ratio = 0.2
 
 # 1. set random seed
 random.seed(2050)
@@ -198,7 +195,6 @@ def test(test_loader,model,folds):
     sample_submission_df.to_csv('./submit/%s_bestloss_submission.csv'%config.model_name, index=None)
 
 
-# 4. main function
 def main():
     fold = 0
     # 4.1 mkdirs
@@ -211,46 +207,11 @@ def main():
     if not os.path.exists(config.logs):
         os.mkdir(config.logs)
     
-    #4.2 get model
     model=MultiModalNet("se_resnext101_32x4d","dpn26",0.5)
-    #model=MultiModalNet("se_resnet50","dpn26",0.5)
 
-
-    #L1+L2+cross
-    # def l1_regularization(model, l1_alpha):
-    #     l1_loss = []
-    #     for module in model.modules():
-    #         if type(module) is nn.BatchNorm2d:
-    #             l1_loss.append(torch.abs(module.weight).sum())
-    #     return l1_alpha * sum(l1_loss)
- 
-    # def l2_regularization(model, l2_alpha):
-    #     l2_loss = []
-    #     for module in model.modules():
-    #         if type(module) is nn.Conv2d:
-    #             l2_loss.append((module.weight ** 2).sum() / 2.0)
-    #     return l2_alpha * sum(l2_loss)
-
-
-    #4.3 optim & criterion
-    # 原来
     optimizer = optim.SGD(model.parameters(),lr = config.lr,momentum=0.9,weight_decay=1e-4)
-    # optimizer = optim.Adam(model.parameters(),lr=config.lr,weight_decay=0.01)
-    # optimizer = optim.SGD(model.parameters(),lr = config.lr,momentum=0.9,weight_decay=0.018)
-    # optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=5.0)
-#torch.optim.Adam()参数中的 weight_decay=5.0 即为L2正则化（只是pytorch换了名字），其数值即为L2正则化的惩罚系数，一般设置为1、5、10（根据需要设置，默认为0，不使用L2正则化）
+
     criterion=nn.CrossEntropyLoss().to(device)
-    # scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
-    # print(c)
-    # criterion=CombinedLoss()
-    # FocalLoss().to(device)
-    # print(criterion)
-    # Balanced_CE_loss
-    # nn.CrossEntropyLoss().to(device)+
-    # criterion=nn.CrossEntropyLoss().to(device)+l1_regularization(model,0.1)+l2_regularization(model,0.1)
-
-
-    
 
     start_epoch = 0
     best_acc=0
@@ -329,9 +290,6 @@ def main():
             )
         log.write("\n")
         reslist.append({"epoch":epoch,"acc":str(best_results[0])[:5],"f1":str(best_results[2])[:5]})
-        time.sleep(0.01)
-        if (epoch+1)%5==0 or epoch==0:
-            pushplus(config.model_name,pd.DataFrame(reslist).to_markdown(index=False))
 
     best_model = torch.load("%s/%s_fold_%s_model_best_loss.pth.tar"%(config.best_models,config.model_name,str(fold)))
     model.load_state_dict(best_model["state_dict"])
