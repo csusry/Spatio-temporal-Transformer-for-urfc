@@ -5,8 +5,6 @@ import torch.nn as nn
  
 class SelfAttention(nn.Module):
     def __init__(self, dim_q=182, dim_k=24, dim_v=1):
-        # def __init__(self, dim_q=182, dim_k=24, dim_v=1):
-    # def __init__(self, dim_q=64, dim_k=64, dim_v=1):
         super(SelfAttention, self).__init__()
         self.dim_q = dim_q
         self.dim_k = dim_k

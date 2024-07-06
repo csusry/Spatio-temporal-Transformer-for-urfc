@@ -13,8 +13,6 @@ from torch.autograd import Variable
 # save best model
 def save_checkpoint(model,state, is_best_acc,is_best_loss,is_best_f1,fold):
     filename = config.weights + config.model_name + os.sep +str(fold) + os.sep + "checkpoint.pth.tar"
-    # torch.save(model.state_dict(), filename) 
-    # torch.save(torch.load(model), filename) 
     torch.save(model, filename)
     if is_best_acc:
         shutil.copyfile(filename,"%s/%s_fold_%s_model_best_acc.pth.tar"%(config.best_models,config.model_name,str(fold)))

@@ -5,12 +5,7 @@ import time
 from shutil import copyfile
 
 class DefaultConfigs(object): 
-    # model_name = "衰减16多尺度0.686sgd0.001混淆矩阵"#Adam
-    # model_name = "0.001无loss无注意力对比0.693混淆原0.690k24,1"#0.665无loss无注意力test生成sub
-    model_name = "Spatio-temporal Transformer"#0.587单Bilstm/0.678
-    # model_name = "0.665无loss无注意力test生成sub"
-    # 0.681两个0.678_1个sax
-    # model_name = "RESNET18+BILSTM复现adam0.0003"
+    model_name = "Spatio-temporal Transformer"
     num_classes = 9
     img_weight = 100
     img_height = 100
